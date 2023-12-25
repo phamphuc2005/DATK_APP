@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "29693414597",
+    "project_id": "datk-1bd96",
+    "storage_bucket": "datk-1bd96.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29693414597:android:6993284578ec5cc121b4ac",
+        "android_client_info": {
+          "package_name": "com.phucpm.AppDatk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpZ1EtjZoATZZvqkfdBU_NTbYmGneBbQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,21 +4,27 @@ import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 're
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomSheet, Button, Tab, TabView } from 'react-native-elements';
+import { BottomSheet, Button, Dialog, Tab, TabView } from 'react-native-elements';
 import { FontAwesome, Entypo, AntDesign } from '@expo/vector-icons';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
-import { getRequest } from '../../Services/api';
+import { getRequest, postRequest } from '../../Services/api';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
 const Request = ({navigation}) => {
     const navigations  = useNavigation();
     const [ requests, setRequests ] = useState([]);
+    const [ userId, setUserId ] = useState('');
+    const [ request, setRequest ] = useState('');
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         const checkAccessToken = async () => {
             const accessToken = await AsyncStorage.getItem('accessToken');
+            const userID = await AsyncStorage.getItem('user_id');
+            setUserId(userID);
             if (!accessToken) {
                 navigation.navigate('Login');
             } else {
@@ -32,6 +38,44 @@ const Request = ({navigation}) => {
         const data = await getRequest('/list-request');
         setRequests(await data);
         // console.log(await data);
+      }
+
+      const toggleDialog = () => {
+        setVisible(!visible);
+      };
+
+      const chooseRequest = (e) => {
+        setRequest(e);
+        setVisible(true);
+      }
+
+      const cancelRequest = async () => {
+        const data = await postRequest('/cancel-request', {
+          locationID: request,
+          userID: userId
+        });
+        const error = await data.message;
+        if (error) {
+          setVisible(false);
+          Toast.show({
+            type: 'error',
+            text1: error,
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+        }
+        else {
+          setVisible(false);
+          Toast.show({
+            type: 'success',
+            text1: 'Thành công',
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+          GetRequests();
+        }
       }
 
   return (
@@ -55,6 +99,7 @@ const Request = ({navigation}) => {
                                         title={'Hủy'}
                                         buttonStyle={{borderColor: 'red', borderWidth: 1, backgroundColor: 'white'}}
                                         titleStyle={{color: 'red'}}
+                                        onPress={()=>chooseRequest(e._id)}
                                     ></Button>
                                 </View>
                             </View>
@@ -66,6 +111,18 @@ const Request = ({navigation}) => {
                 }
 
             </View>
+
+            <Dialog
+              isVisible={visible}
+              onBackdropPress={toggleDialog}
+            >
+              <Dialog.Title title="Hủy yêu cầu"/>
+              <Text style={{fontSize: 16}}>Bạn có chắc chắn muốn hủy không ?</Text>
+              <View>
+                <Button title={'Có'} buttonStyle={{marginBottom: 10, marginTop: 20}} onPress={()=>cancelRequest()}></Button>
+                <Button title={'Không'} buttonStyle={{backgroundColor:'red'}} onPress={()=>toggleDialog()}></Button>
+              </View>
+            </Dialog>
         </ScrollView>
         <Footer navigation={navigation} page={'Request'}/>
     </View>

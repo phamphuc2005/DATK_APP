@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+datk-1bd96-189022f354b1.json
+google-services.json
+
 # Expo
 .expo/
 dist/

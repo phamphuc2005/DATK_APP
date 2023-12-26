@@ -4,21 +4,29 @@ import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 're
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomSheet, Button } from 'react-native-elements';
+import { BottomSheet, Button, Dialog, Input } from 'react-native-elements';
 import { FontAwesome, Entypo, AntDesign } from '@expo/vector-icons';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
-import { getRequest } from '../../Services/api';
+import { getRequest, postRequest } from '../../Services/api';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
 const ListLocation = ({navigation}) => {
     const navigations  = useNavigation();
     const [ locations, setLocations ] = useState([]);
+    const [ userId, setUserId ] = useState('');
+    const [visibleCreate, setVisibleCreate] = useState(false);
+    const [visibleJoin, setVisibleJoin] = useState(false);
+    const [locationName, setLocationName] = useState('');
+    const [locationID, setLocationID] = useState('');
 
     useEffect(() => {
         const checkAccessToken = async () => {
             const accessToken = await AsyncStorage.getItem('accessToken');
+            const userID = await AsyncStorage.getItem('user_id');
+            setUserId(userID);
             if (!accessToken) {
                 navigation.navigate('Login');
             } else {
@@ -41,6 +49,72 @@ const ListLocation = ({navigation}) => {
     navigation.navigate('LocationDetail', {locationID: value._id});
   }
 
+  const toggleCreate = () => {
+    setVisibleCreate(!visibleCreate);
+  };
+
+  const toggleJoin = () => {
+    setVisibleJoin(!visibleJoin);
+  };
+
+  const createLocation = async () => {
+    const data = await postRequest('/add-location', {
+      name: locationName,
+      userID: userId
+    });
+    const error = await data.message;
+    if (error) {
+      setVisibleCreate(false);
+      Toast.show({
+        type: 'error',
+        text1: error,
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+    }
+    else {
+      setVisibleCreate(false);
+      Toast.show({
+        type: 'success',
+        text1: 'Thành công',
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+      GetLocations();
+    }
+  }
+
+  const joinLocation = async () => {
+    const data = await postRequest('/join-location', {
+      locationID: locationID,
+      userID: userId
+    });
+
+    const error = await data.message;
+    if (error) {
+      setVisibleJoin(false);
+      Toast.show({
+        type: 'error',
+        text1: error,
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+    }
+    else {
+      setVisibleJoin(false);
+      Toast.show({
+        type: 'success',
+        text1: 'Thành công. Vui lòng chờ admin duyệt!',
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Header navigation={navigation}/>
@@ -51,10 +125,12 @@ const ListLocation = ({navigation}) => {
                     <Button
                         title={'Tạo mới'}
                         buttonStyle={{ backgroundColor: 'green' }}
+                        onPress={()=>toggleCreate()}
                     ></Button>
                     <Button
                         title={'Xin gia nhập'}
                         buttonStyle={{}}
+                        onPress={()=>toggleJoin()}
                     ></Button>
                     <Button
                         title={'Đã yêu cầu'}
@@ -80,6 +156,30 @@ const ListLocation = ({navigation}) => {
                     <View><Text>Danh sách trống</Text></View>
                 }
             </View>
+
+            <Dialog
+              isVisible={visibleCreate}
+              onBackdropPress={toggleCreate}
+            >
+              <Dialog.Title title="Tạo mới khu vực"/>
+              <Input placeholder="Nhập tên khu vực" onChangeText={(value)=>setLocationName(value)}/>
+              <View>
+                <Button title={'Tạo'} buttonStyle={{marginBottom: 10, marginTop: 20}} onPress={()=>createLocation()}></Button>
+                <Button title={'Hủy'} buttonStyle={{backgroundColor:'red'}} onPress={()=>toggleCreate()}></Button>
+              </View>
+            </Dialog>
+
+            <Dialog
+              isVisible={visibleJoin}
+              onBackdropPress={toggleJoin}
+            >
+              <Dialog.Title title="Gia nhập khu vực"/>
+              <Input placeholder="Nhập mã khu vực" onChangeText={(value)=>setLocationID(value)}/>
+              <View>
+                <Button title={'Gửi'} buttonStyle={{marginBottom: 10, marginTop: 20}} onPress={()=>joinLocation()}></Button>
+                <Button title={'Hủy'} buttonStyle={{backgroundColor:'red'}} onPress={()=>toggleJoin()}></Button>
+              </View>
+            </Dialog>
         </ScrollView>
         <Footer navigation={navigation} page={'ListLocation'}/>
     </View>

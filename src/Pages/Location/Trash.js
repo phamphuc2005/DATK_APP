@@ -4,11 +4,11 @@ import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 're
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomSheet, Button, Tab, TabView } from 'react-native-elements';
+import { BottomSheet, Button, Dialog, Tab, TabView } from 'react-native-elements';
 import { FontAwesome, Entypo, AntDesign } from '@expo/vector-icons';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
-import { getRequest } from '../../Services/api';
+import { getRequest, postRequest } from '../../Services/api';
 
 const Stack = createStackNavigator();
 
@@ -16,13 +16,20 @@ const Trash = ({navigation}) => {
     const navigations  = useNavigation();
     const [ location, setLocation ] = useState([]);
     const [ location_id, setLocationId ] = useState();
+    const [ userId, setUserId ] = useState('');
     const [ allSystems, setAllSystems ] = useState([]);
+
+    const [ trashId, setTrashId ] = useState('');
+    const [visibleRestore, setVisibleRestore] = useState(false);
+    const [visibleDelete, setVisibleDelete] = useState(false);
 
     useEffect(() => {
         const checkAccessToken = async () => {
             const accessToken = await AsyncStorage.getItem('accessToken');
             const location_id = await  AsyncStorage.getItem('locationID');
             setLocationId(location_id);
+            const userID = await AsyncStorage.getItem('user_id');
+            setUserId(userID);
             if (!accessToken) {
                 navigation.navigate('Login');
             } else {
@@ -44,6 +51,74 @@ const Trash = ({navigation}) => {
         const data = await getRequest(`/get-trash/${location_id}`);
         setAllSystems(await data);
         // console.log(await data);
+      }
+
+      const toggleDialogRestore = (e) => {
+        setTrashId(e._id)
+        setVisibleRestore(!visibleRestore);
+      };
+
+      const toggleDialogDelete = (e) => {
+        setTrashId(e._id)
+        setVisibleDelete(!visibleDelete);
+      };
+
+      const restoreDevice = async () => {
+        const data = await postRequest('/restore-device', {
+          _id: trashId,
+          userID: userId
+        });
+        const error = await data.message;
+        if (error) {
+          setVisibleRestore(false);
+          Toast.show({
+            type: 'error',
+            text1: error,
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+        }
+        else {
+          setVisibleRestore(false);
+          Toast.show({
+            type: 'success',
+            text1: 'Thành công',
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+          GetTrash();
+        }
+      }
+
+      const deleteDevice = async () => {
+        const data = await postRequest('/delete-device', {
+          _id: trashId,
+          userID: userId
+        });
+        const error = await data.message;
+        if (error) {
+          setVisibleDelete(false);
+          Toast.show({
+            type: 'error',
+            text1: error,
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+        }
+        else {
+          setVisibleDelete(false);
+          Toast.show({
+            type: 'success',
+            text1: 'Thành công',
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+          GetTrash();
+        }
       }
 
   return (
@@ -71,11 +146,13 @@ const Trash = ({navigation}) => {
                                         title={'Khôi phục'}
                                         buttonStyle={{borderColor: 'orange', borderWidth: 1, backgroundColor: 'white'}}
                                         titleStyle={{color: 'orange'}}
+                                        onPress={()=>toggleDialogRestore(e)}
                                     ></Button>
                                     <Button
                                         title={'Xóa vĩnh viễn'}
                                         buttonStyle={{borderColor: 'red', borderWidth: 1, backgroundColor: 'white'}}
                                         titleStyle={{color: 'red'}}
+                                        onPress={()=>toggleDialogDelete(e)}
                                     ></Button>
                                 </View>
                             </View>
@@ -87,6 +164,30 @@ const Trash = ({navigation}) => {
                 }
 
             </View>
+
+            <Dialog
+              isVisible={visibleRestore}
+              onBackdropPress={toggleDialogRestore}
+            >
+              <Dialog.Title title="Khôi phục thiết bị"/>
+              <Text style={{fontSize: 16}}>Bạn có chắc chắn muốn khôi phục không ?</Text>
+              <View>
+                <Button title={'Có'} buttonStyle={{marginBottom: 10, marginTop: 20}} onPress={()=>restoreDevice()}></Button>
+                <Button title={'Không'} buttonStyle={{backgroundColor:'red'}} onPress={()=>setVisibleRestore(false)}></Button>
+              </View>
+            </Dialog>
+
+            <Dialog
+              isVisible={visibleDelete}
+              onBackdropPress={toggleDialogDelete}
+            >
+              <Dialog.Title title="Xóa thiết bị"/>
+              <Text style={{fontSize: 16}}>Bạn có chắc chắn muốn xóa không ?</Text>
+              <View>
+                <Button title={'Có'} buttonStyle={{marginBottom: 10, marginTop: 20}} onPress={()=>deleteDevice()}></Button>
+                <Button title={'Không'} buttonStyle={{backgroundColor:'red'}} onPress={()=>setVisibleDelete(false)}></Button>
+              </View>
+            </Dialog>
         </ScrollView>
         <Footer navigation={navigation} page={'Trash'}/>
     </View>

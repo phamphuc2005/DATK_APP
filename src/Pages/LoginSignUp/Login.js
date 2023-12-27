@@ -12,6 +12,9 @@ export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
 
+    var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var passwordPattern = /^[a-zA-Z0-9]{6,}$/;
+
     useEffect( () => {
       const checkAccessToken = async () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
@@ -23,6 +26,23 @@ export default function Login({navigation}) {
     }, [navigation, navigations]);
 
     const handleLogin = async () => {
+      if (!emailPattern.test(email)) {
+        Toast.show({
+          type: 'error',
+          text1: 'Sai định dạng email!',
+          text1Style:{
+            fontSize: 20,
+          },
+        })
+      } else if (!passwordPattern.test(pass)) {
+        Toast.show({
+          type: 'error',
+          text1: 'Mật khẩu cần có ít nhất 6 kí tự, không chứa kí tự đặc biệt và dấu cách !',
+          text1Style:{
+            fontSize: 20,
+          },
+        })
+      } else {
         const data = await postRequest('/login', {
           email,
           password: pass
@@ -44,7 +64,8 @@ export default function Login({navigation}) {
           await AsyncStorage.setItem('accessToken', data.accessToken);
           navigation.navigate('Home');
         }
-      };
+      }
+    };
 
   return (
     <View style={styles.container}>

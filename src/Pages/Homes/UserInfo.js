@@ -21,6 +21,9 @@ const UserInfo = ({navigation }) => {
   const [phone, setPhone] = useState('');
   const [visible, setVisible] = useState(false);
 
+  var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  var phonePattern = /^(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+
   useEffect(() => {
     GetUserInfo();
   }, [navigations]);
@@ -69,7 +72,33 @@ const UserInfo = ({navigation }) => {
   }
 
   const toggleDialog = () => {
-    setVisible(!visible);
+    if (email === '' || name === '' || phone === '') {
+      Toast.show({
+        type: 'error',
+        text1: 'Nhập thiếu dữ liệu !',
+        text1Style:{
+            fontSize: 20,
+        },
+      })
+    } else if (!emailPattern.test(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Sai định dạng email!',
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+    } else if (!phonePattern(phone)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Số điện thoại không hợp lệ !',
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+    } else {
+      setVisible(!visible);
+    }
   };
 
   return (

@@ -20,12 +20,12 @@ import Request from './src/Pages/Location/Request';
 import Menu from './src/Components/Menu';
 import Notice from './src/Components/Notice';
 import Toast from 'react-native-toast-message';
-import registerNNPushToken from 'native-notify';
+// import registerNNPushToken from 'native-notify';
 
 const Stack = createStackNavigator();
 
 export default function App(props) {
-  registerNNPushToken(17007, 'HijsBh8EjeFAfyis39f9tG');
+  // registerNNPushToken(17007, 'HijsBh8EjeFAfyis39f9tG');
   return (
     <NavigationContainer>
       <StatusBar style='auto' backgroundColor='#fff'></StatusBar>

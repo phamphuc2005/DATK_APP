@@ -21,44 +21,64 @@ const ChangePass = ({navigation }) => {
   const [confirmPass, setConfirmPass] = useState('');
   const [visible, setVisible] = useState(false);
 
+  var passwordPattern = /^[a-zA-Z0-9]{6,}$/;
 
   const changePass = async () => {
-    if (newPass === confirmPass) {
-        const data = await postRequest('/change-password', {
-            oldPassword: pass,
-            newPassword: newPass
-        });
-        const error = await data.message;
-        if (error) {
-            setVisible(!visible);
-            Toast.show({
-            type: 'error',
-            text1: error,
-            text1Style:{
-                fontSize: 20,
-            },
-            })
-        }
-        else {
-            setVisible(!visible);
-            navigation.replace('ChangePass');
-            Toast.show({
-            type: 'success',
-            text1: 'Thành công',
-            text1Style:{
-                fontSize: 20,
-            },
-            })
-        }
-    } else {
-        setVisible(!visible);
-        Toast.show({
-            type: 'error',
-            text1: 'Mật khẩu xác nhận khác mật khẩu mới !',
-            text1Style:{
-                fontSize: 18,
-            },
+    if (pass === '' || newPass === '' || confirmPass === '') {
+      Toast.show({
+        type: 'error',
+        text1: 'Nhập thiếu dữ liệu !',
+        text1Style:{
+            fontSize: 20,
+        },
         })
+    } else if (!passwordPattern.test(pass) || !passwordPattern.test(newPass)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Mật khẩu cần có ít nhất 6 kí tự, không chứa kí tự đặc biệt và dấu cách !',
+        text1Style:{
+          fontSize: 20,
+        },
+      })
+    } else {
+      if (newPass === confirmPass) {
+          const data = await postRequest('/change-password', {
+              oldPassword: pass,
+              newPassword: newPass
+          });
+          const error = await data.message;
+          if (error) {
+              setVisible(!visible);
+              Toast.show({
+              type: 'error',
+              text1: error,
+              text1Style:{
+                  fontSize: 20,
+              },
+              })
+          }
+          else {
+              setVisible(!visible);
+              navigation.replace('ChangePass');
+              Toast.show({
+              type: 'success',
+              text1: 'Thành công',
+              text1Style:{
+                  fontSize: 20,
+              },
+              })
+          }
+      } else {
+          setVisible(!visible);
+          Toast.show({
+              type: 'error',
+              text1: 'Mật khẩu xác nhận khác mật khẩu mới !',
+              text1Style:{
+                  fontSize: 18,
+              },
+          })
+      }
+
     }
   }
 

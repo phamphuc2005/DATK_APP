@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -57,7 +57,7 @@ const Notice = ({navigation}) => {
   }
 
   const showNotice = async (e) => {
-    alert(e.content);
+    Alert.alert('Thông báo', e.content);
     const data = await postRequest('/read-notice', {
       _id: e._id,
       userID: userId

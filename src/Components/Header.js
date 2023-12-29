@@ -5,7 +5,7 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { getRequest } from '../Services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Badge } from 'react-native-elements';
+import { Badge, Header as Head } from 'react-native-elements';
 
 const Header = ({ navigation }) => {
   const handleGoToHome = () => {
@@ -54,8 +54,8 @@ const Header = ({ navigation }) => {
     }
 
   return (
-    <View style={styles.footer}>
-        <TouchableOpacity style={styles.headerItem} onPress={() => handleGoToHome()}>
+    <View style={{width: '100%'}}>
+        {/* <TouchableOpacity style={styles.headerItem} onPress={() => handleGoToHome()}>
             <Feather name="menu" size={22} color="#fff" />
             <Text style={styles.headerText}></Text>
         </TouchableOpacity>
@@ -68,7 +68,30 @@ const Header = ({ navigation }) => {
             containerStyle={{ position: 'absolute', top: -7.5, left: 10 }}
           />
           <Text style={styles.headerText}></Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <Head
+          backgroundColor='dodgerblue'
+          barStyle='default'
+          leftComponent={
+            <TouchableOpacity style={{paddingLeft:15, paddingTop: 5}} onPress={() => handleGoToHome()}>
+              <Feather name="menu" size={22} color="#fff" />
+            </TouchableOpacity>
+          }
+          centerComponent={
+            <Text style={{fontSize:26, fontWeight: 700, color:'#fff'}}>FIRE ALARM SYSTEM</Text>
+          }
+          rightComponent={
+            <TouchableOpacity style={{paddingRight:15, paddingTop: 5}} onPress={() => navigation.navigate('Notice')}>
+              <AntDesign name="bells" size={22} color="#fff" />
+              <Badge
+                status="error"
+                value={counts}
+                containerStyle={{ position: 'absolute', top: -5, left: 10 }}
+              />
+            </TouchableOpacity>
+          }
+        >
+        </Head>
     </View>
   );
 };
@@ -88,8 +111,9 @@ const styles = StyleSheet.create({
     paddingRight: 20
   },
   headerItem: {
-    alignItems: 'center',
-    marginTop: 50
+    paddingLeft: 10
+    // alignItems: 'center',
+    // marginTop: 50
   },
   headerText: {
     color: '#fff',

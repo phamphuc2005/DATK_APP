@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     width: '100%',
-    paddingLeft: 20,
-    paddingRight: 20
+    paddingLeft: 30,
+    paddingRight: 30
   },
   footerItem: {
     alignItems: 'center',

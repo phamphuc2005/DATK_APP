@@ -446,26 +446,28 @@ const LocationDetail = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Header navigation={navigation}/>
-        <View style={{marginHorizontal:'5%', borderColor: '#eee', borderWidth: 1}}>
+        <View style={{marginHorizontal:'5%', marginTop:10}}>
             <Tab
                 value={index}
                 onChange={(e) => setIndex(e)}
                 indicatorStyle={{
-                    backgroundColor: 'green',
+                    backgroundColor: '#000',
                     height: 2,
                 }}
                 // variant="primary"
                 style={{}}
             >
                 <Tab.Item
-                    title="Thành viên"
-                    titleStyle={{ fontSize: 12, color: 'black' }}
-                    icon={{ name: 'users', type: 'feather', color: 'black' }}
+                  containerStyle={{backgroundColor: '#eee', marginHorizontal: 2.5}}
+                  title="Thành viên"
+                  titleStyle={{ fontSize: 12, color: 'black' }}
+                  icon={{ name: 'users', type: 'feather', color: 'black' }}
                 />
                 <Tab.Item
-                    title="Thiết bị"
-                    titleStyle={{ fontSize: 12, color: 'black' }}
-                    icon={{ name: 'hard-drive', type: 'feather', color: 'black' }}
+                  containerStyle={{backgroundColor: '#eee', marginHorizontal: 2.5}}
+                  title="Thiết bị"
+                  titleStyle={{ fontSize: 12, color: 'black' }}
+                  icon={{ name: 'hard-drive', type: 'feather', color: 'black' }}
                 />
             </Tab>
         </View>

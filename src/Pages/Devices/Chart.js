@@ -20,7 +20,7 @@ const Chart = (val) => {
         [...data, val.val]
       
     );
-    if (param.length  === 10) {
+    if (param.length  === 12) {
       setParam(param.slice(1));
     }
     }, 1000);

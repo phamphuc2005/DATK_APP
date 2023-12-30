@@ -15,16 +15,16 @@ const Footer = ({ navigation, page }) => {
   return (
     <View style={styles.footer}>
         <TouchableOpacity style={styles.footerItem} onPress={()=>handleReloadPress()}>
-            <Ionicons name="reload" size={24} color="#fff" />
-            <Text style={styles.footerText}></Text>
+            <Ionicons name="reload" size={24} color="#000" />
+            {/* <Text style={styles.footerText}></Text> */}
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerItem} onPress={handleGoToHome}>
-            <AntDesign name="home" size={25} color="#fff" />
-            <Text style={styles.footerText}></Text>
+            <AntDesign name="home" size={25} color="#000" />
+            {/* <Text style={styles.footerText}></Text> */}
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerItem} onPress={()=>navigation.goBack()}>
-            <AntDesign name="arrowleft" size={25} color="#fff" />
-            <Text style={styles.footerText}></Text>
+            <AntDesign name="left" size={25} color="#000" />
+            {/* <Text style={styles.footerText}></Text> */}
         </TouchableOpacity>
     </View>
   );
@@ -36,17 +36,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     // gap: 100,
     alignItems: 'center',
-    backgroundColor: 'dodgerblue',
+    backgroundColor: '#fff',
     height: 50,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    borderTopWidth: 0.5,
+    borderTopColor: '#000',
     width: '100%',
-    paddingLeft: 30,
-    paddingRight: 30
+    paddingLeft: 25,
+    paddingRight: 25
   },
   footerItem: {
     alignItems: 'center',
-    marginTop: 15
+    // marginTop: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 10
   },
   footerText: {
     color: '#fff',

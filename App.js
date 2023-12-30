@@ -31,8 +31,8 @@ export default function App(props) {
       <StatusBar style='auto' backgroundColor='#fff'></StatusBar>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-        <Stack.Screen name="SignUp" component={SignUp} options={{headerShown: true, title: 'ĐĂNG KÝ'}}/>
-        <Stack.Screen name="ForgetPass" component={ForgetPass} options={{headerShown: true, title: 'LẤY LẠI MẬT KHẨU'}}/>
+        <Stack.Screen name="SignUp" component={SignUp} options={{headerShown: true, title: 'ĐĂNG KÝ', headerTitleAlign: 'center'}}/>
+        <Stack.Screen name="ForgetPass" component={ForgetPass} options={{headerShown: true, title: 'LẤY LẠI MẬT KHẨU', headerTitleAlign: 'center'}}/>
         <Stack.Screen name="Home" component={Home} options={{headerShown: false}}/>
         <Stack.Screen name="UserInfo" component={UserInfo} options={{headerShown: false}}/>
         <Stack.Screen name="ChangePass" component={ChangePass} options={{headerShown: false}}/>
@@ -44,8 +44,8 @@ export default function App(props) {
         <Stack.Screen name="LocationDetail" component={LocationDetail} options={{headerShown: false}}/>
         <Stack.Screen name="Trash" component={Trash} options={{headerShown: false}}/>
         <Stack.Screen name="Request" component={Request} options={{headerShown: false}}/>
-        <Stack.Screen name="Menu" component={Menu} options={{headerShown: true, title: 'MENU'}}/>
-        <Stack.Screen name="Notice" component={Notice} options={{headerShown: true, title: 'THÔNG BÁO'}}/>
+        <Stack.Screen name="Menu" component={Menu} options={{headerShown: true, title: 'MENU', headerTitleAlign: 'center'}}/>
+        <Stack.Screen name="Notice" component={Notice} options={{headerShown: true, title: 'THÔNG BÁO', headerTitleAlign: 'center'}}/>
       </Stack.Navigator>
       <Toast/>
     </NavigationContainer>

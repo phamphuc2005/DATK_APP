@@ -5,7 +5,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native-elements';
-import { FontAwesome5, Entypo, AntDesign } from '@expo/vector-icons';
+import { FontAwesome5,FontAwesome, Entypo, AntDesign } from '@expo/vector-icons';
 import { getRequest } from '../Services/api';
 
 // const Stack = createStackNavigator();
@@ -58,7 +58,7 @@ const Menu = ({navigation}) => {
 
         <TouchableOpacity style={styles.item} onPress={()=>navigation.navigate('UserInfo')}>
             <View style={{flexDirection: 'row', gap: 10}}>
-                <AntDesign name="user" size={20} color="black" />
+                <FontAwesome name="user-o" size={20} color="black" />
                 <Text style={{fontSize: 20}}>Thông tin tài khoản</Text>
             </View>
             <AntDesign name="right" size={20} color="black" />

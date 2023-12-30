@@ -25,7 +25,8 @@ const Home = ({navigation}) => {
           <Text style={{fontSize:40, fontWeight: 800, marginTop: 20, marginBottom: 10}}>Trang chủ</Text>
           <TouchableOpacity style={styles.home_box} onPress={()=>navigation.navigate('UserInfo')}>
             <View style={{borderBottomColor: 'black', borderBottomWidth:1, width: '90%', alignItems: 'center', paddingBottom: 10}}>
-              <AntDesign name="user" size={30} color="black" style={styles.icon} />
+            <FontAwesome name="user-o" size={30} color="black" style={styles.icon}/>
+              {/* <AntDesign name="user" size={30} color="black" style={styles.icon} /> */}
             </View>
             <View><Text style={{fontSize: 24, paddingTop:5, fontWeight: 500}}>Quản lý tài khoản</Text></View>
           </TouchableOpacity>

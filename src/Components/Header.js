@@ -70,23 +70,24 @@ const Header = ({ navigation }) => {
           <Text style={styles.headerText}></Text>
         </TouchableOpacity> */}
         <Head
-          backgroundColor='dodgerblue'
-          barStyle='default'
+          backgroundColor='#fff'
+          containerStyle={{borderBottomColor: '#000'}}
+          // barStyle='default'
           leftComponent={
-            <TouchableOpacity style={{paddingLeft:15, paddingTop: 5}} onPress={() => handleGoToHome()}>
-              <Feather name="menu" size={22} color="#fff" />
+            <TouchableOpacity style={{paddingHorizontal:15, paddingVertical: 5}} onPress={() => handleGoToHome()}>
+              <Feather name="menu" size={22} color="#000" />
             </TouchableOpacity>
           }
           centerComponent={
-            <Text style={{fontSize:26, fontWeight: 700, color:'#fff'}}>FIRE ALARM SYSTEM</Text>
+            <Text style={{fontSize:26, fontWeight: 700, color:'#000'}}>FIRE ALARM SYSTEM</Text>
           }
           rightComponent={
-            <TouchableOpacity style={{paddingRight:15, paddingTop: 5}} onPress={() => navigation.navigate('Notice')}>
-              <AntDesign name="bells" size={22} color="#fff" />
+            <TouchableOpacity style={{paddingHorizontal:15, paddingVertical: 5}} onPress={() => navigation.navigate('Notice')}>
+              <AntDesign name="bells" size={22} color="#000" />
               <Badge
                 status="error"
                 value={counts}
-                containerStyle={{ position: 'absolute', top: -5, left: 10 }}
+                containerStyle={{ position: 'absolute', top: -5, left: 25 }}
               />
             </TouchableOpacity>
           }
@@ -97,7 +98,7 @@ const Header = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  footer: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     // gap: 20,

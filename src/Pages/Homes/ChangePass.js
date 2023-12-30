@@ -98,25 +98,28 @@ const ChangePass = ({navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={navigation}/>
-      <Text style={{fontSize:40, fontWeight: 800, marginTop: -20}}>Đổi mật khẩu</Text>
-      <View style={styles.form}>
-        {/* <Text style={{fontSize:30, marginBottom:20}}>Đăng nhập</Text> */}
-        <Text style={styles.label}>Mật khẩu cũ:</Text>
-        <Input placeholder="Mật khẩu cũ" onChangeText={(value)=>setPass(value)}/>
-        <Text style={styles.label}>Mật khẩu mới:</Text>
-        <Input placeholder="Mật khẩu mới" onChangeText={(value)=>setNewPass(value)}/>
-        <Text style={styles.label}>Xác nhận mật khẩu mới:</Text>
-        <Input placeholder="Xác nhận mật khẩu mới" onChangeText={(value)=>setConfirmPass(value)}/>
+      <View style={{width: '100%', alignItems: 'center'}}>
+        <Header navigation={navigation}/>
+        <Text style={{fontSize:40, fontWeight: 800, marginTop: 20}}>Đổi mật khẩu</Text>
+        <View style={styles.form}>
+          {/* <Text style={{fontSize:30, marginBottom:20}}>Đăng nhập</Text> */}
+          <Text style={styles.label}>Mật khẩu cũ:</Text>
+          <Input placeholder="Mật khẩu cũ" onChangeText={(value)=>setPass(value)}/>
+          <Text style={styles.label}>Mật khẩu mới:</Text>
+          <Input placeholder="Mật khẩu mới" onChangeText={(value)=>setNewPass(value)}/>
+          <Text style={styles.label}>Xác nhận mật khẩu mới:</Text>
+          <Input placeholder="Xác nhận mật khẩu mới" onChangeText={(value)=>setConfirmPass(value)}/>
 
-      </View>
+        </View>
         <Button 
             title={'Xác nhận'} 
             style={styles.btn} 
-            containerStyle={{ width: 350}} 
+            containerStyle={{ width: '90%'}} 
             titleStyle={{fontSize: 20, padding:10}}
             onPress={()=>toggleDialog()}>
         </Button>
+
+      </View>
 
         <Dialog
           isVisible={visible}
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'space-between',
     // paddingTop: 20,
     // paddingLeft: 20,
@@ -149,7 +152,7 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     paddingLeft: 10,
     paddingRight: 10,
-    marginTop: -30
+    marginVertical: 30
   },
   label: {
     fontSize: 20,

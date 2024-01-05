@@ -4,13 +4,16 @@ import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 're
 import { NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button } from 'react-native-elements';
+import { Button, Tab, TabView } from 'react-native-elements';
 import { FontAwesome, Entypo, AntDesign } from '@expo/vector-icons';
 import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
 import { getRequest, postRequest } from '../../Services/api';
 import moment from 'moment/moment';
 import ChartStatistic from './ChartStatistic';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import Toast from 'react-native-toast-message';
+import ChartStatistic2 from './ChartStatistic2';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +33,32 @@ const Statistic = ({navigation}) => {
     const [humid, setHumid] = useState([])
     const [fire, setFire] = useState([])
     const [gas, setGas] = useState([])
+
+    const [date, setDate] = useState(new Date())
+    const [index, setIndex] = useState(0)
+    const [atime, setATime] = useState([])
+    const [atemp, setATemp] = useState([])
+    const [ahumid, setAHumid] = useState([])
+    const [afire, setAFire] = useState([])
+    const [agas, setAGas] = useState([])
+
+    const onChange = (event, selectedDate) => {
+      const currentDate = selectedDate;
+      setDate(currentDate);
+    };
+  
+    const showMode = (currentMode) => {
+      DateTimePickerAndroid.open({
+        value: date,
+        onChange,
+        mode: currentMode,
+        is24Hour: true,
+      });
+    };
+  
+    const showDatepicker = () => {
+      showMode('date');
+    };
 
     useEffect(() => {
         const checkAccessToken = async () => {
@@ -77,7 +106,7 @@ const Statistic = ({navigation}) => {
           if (data) {
             setParam(data.data);
             data.data.map(data => {
-              time.push(moment(data.day).format('DD/MM/YYYY'))
+              time.push(new Date(data.day).toLocaleDateString())
               temp.push(data.temp)
               humid.push(data.humid)
               fire.push(data.fire)
@@ -96,7 +125,7 @@ const Statistic = ({navigation}) => {
       // console.log(param);
 
       const dateStrings = arr.map((date) => {
-        const day = moment(date).format('DD/MM/YYYY')
+        const day = new Date(date).toLocaleDateString();
         return `${day}`;
       });
 
@@ -110,45 +139,73 @@ const Statistic = ({navigation}) => {
       
       // console.log(temp);
 
+      useEffect(() => {
+        GetValue();
+      }, [navigations, deviceID, date]);
+
+      const GetValue = async () => {
+        const data = await postRequest(`/statistic_time/${deviceID}`, {
+          type: 'date', 
+          times: date
+        })
+        if (data) {
+          data.data.map(data=> {
+            atemp.push(data.temp)
+            ahumid.push(data.humid)
+            afire.push(data.fire)
+            agas.push(data.gas)
+            atime.push(`${moment(data.hour).format('HH')}`)
+          })
+          setATime(atime.slice(-24));
+          setATemp(atemp.slice(-24));
+          setAHumid(ahumid.slice(-24));
+          setAFire(afire.slice(-24));
+          setAGas(agas.slice(-24));
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Lỗi',
+            text1Style:{
+              fontSize: 20,
+            },
+          })
+        }
+      }
+
   return (
     <View style={styles.container}>
       <Header navigation={navigation}/>
-        <ScrollView style={{paddingTop: 20}}>
+          <View style={{ width:'90%', marginLeft: '5%', marginTop: 10, marginBottom: 10}}>
+            <Tab
+                value={index}
+                onChange={(e) => setIndex(e)}
+                indicatorStyle={{
+                    backgroundColor: '#000',
+                    height: 2,
+                }}
+                // variant="primary"
+                style={{}}
+            >
+                <Tab.Item
+                  containerStyle={{backgroundColor: '#eee', marginHorizontal: 1}}
+                  title="7 ngày"
+                  titleStyle={{ fontSize: 20, color: 'black' }}
+                  icon={{ name: 'calendar', type: 'font-awesome', color: 'black' }}
+                  iconPosition='left'
+                />
+                <Tab.Item
+                  containerStyle={{backgroundColor: '#eee', marginHorizontal: 1}}
+                  title="1 ngày"
+                  titleStyle={{ fontSize: 20, color: 'black' }}
+                  icon={{ name: 'calendar-o', type: 'font-awesome', color: 'black' }}
+                  iconPosition='left'
+                />
+            </Tab>
+        </View>
+        <ScrollView style={{paddingTop: 10}}>
             <View style={{width: '100%', alignItems: 'center', marginBottom: 50}}>
                 <Text style={{fontSize:40, fontWeight: 800, marginBottom: 10}}>Số liệu trung bình</Text>
-                <View style={styles.select_time}>
-                    <Button
-                        onPress={()=>prevWeek()}
-                        icon={{
-                            type:'ant-design',
-                            name: 'caretleft',
-                            color: 'white',
-                            size: 15
-                        }}
-                    ></Button>
-                    <View style={styles.time}><Text style={{fontSize: 18}}>{dateStrings[0]} - {dateStrings[6]}</Text></View>
-                    {day === -7 ?
-                        <Button
-                            disabled
-                            onPress={()=>nextWeek()}
-                            icon={{
-                                type:'ant-design',
-                                name: 'caretright',
-                                color: 'white',
-                                size: 15
-                            }}
-                        ></Button> :
-                        <Button
-                            onPress={()=>nextWeek()}
-                            icon={{
-                                type:'ant-design',
-                                name: 'caretright',
-                                color: 'white',
-                                size: 15
-                            }}
-                        ></Button>
-                    }
-                </View>
+
                 <View style={styles.list_box}>
                     <View>
                         <Text style={{fontSize: 20, fontWeight: 500}}>Mã thiết bị: {deviceID}</Text>
@@ -169,62 +226,160 @@ const Statistic = ({navigation}) => {
                     <View><Text style={{fontSize: 18}}>Lửa: {val.fire}</Text></View>
                     <View><Text style={{fontSize: 18}}>Ga: {val.gas ? val.gas : ' '}</Text></View>
                 </View> */}
-                <View style={styles.table}>
-                  <View style={styles.table_header}>
-                      <Text style={{fontWeight: 700}}>Thời gian</Text>
-                      <Text style={{fontWeight: 700}}>Nhiệt độ</Text>
-                      <Text style={{fontWeight: 700}}>Độ ẩm</Text>
-                      <Text style={{fontWeight: 700}}>Lửa</Text>
-                      <Text style={{fontWeight: 700}}>Gas</Text>
 
-                  </View>
-                  {param.length>0 && param.map((e, index)=>(
-                      <View style={styles.table_item} key={index}>
-                          <Text>{moment(e.day).format('DD/MM/YYYY')}</Text>
-                          <Text>{e.temp}°C</Text>
-                          <Text>{e.humid}%</Text>
-                          <Text>{e.fire}</Text>
-                          <Text>{e.gas}</Text>
-                      </View>             
-                  ))}
-                </View>
-                <View style={styles.chart}>
-                    <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ nhiệt độ</Text>
-                    <ChartStatistic
-                        time={time} 
-                        val={temp}
-                        name='Nhiệt độ' 
-                        color='#ffff00'   
-                    />
-                </View>
-                <View style={styles.chart}>
-                    <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ độ ẩm</Text>
-                    <ChartStatistic
-                        time={time} 
-                        val={humid} 
-                        name='Độ ẩm' 
-                        color='#00ffff'
-                    />
-                </View>
-                <View style={styles.chart}>
-                    <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ gas</Text>
-                    <ChartStatistic
-                        time={time} 
-                        val={gas} 
-                        name='Gas'
-                        color='#00ff00'
-                    />
-                </View>
-                <View style={styles.chart}>
-                    <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ lửa</Text>
-                    <ChartStatistic
-                        time={time} 
-                        val={fire} 
-                        name='Lửa'
-                        color='#ff0000'
-                    />
-                </View>
+                <TabView value={index} onChange={setIndex} animationType="spring">
+                    <TabView.Item style={{ width: '100%', paddingLeft: '5%', paddingRight:'5%', marginLeft:'50%'}}>
+                        <View style={{alignItems:'center'}}>
+                          <View style={styles.select_time}>
+                            <Button
+                                onPress={()=>prevWeek()}
+                                icon={{
+                                    type:'ant-design',
+                                    name: 'caretleft',
+                                    color: 'white',
+                                    size: 15
+                                }}
+                            ></Button>
+                            <View style={styles.time}><Text style={{fontSize: 18}}>{dateStrings[0]} - {dateStrings[6]}</Text></View>
+                            {day === -7 ?
+                                <Button
+                                    disabled
+                                    onPress={()=>nextWeek()}
+                                    icon={{
+                                        type:'ant-design',
+                                        name: 'caretright',
+                                        color: 'white',
+                                        size: 15
+                                    }}
+                                ></Button> :
+                                <Button
+                                    onPress={()=>nextWeek()}
+                                    icon={{
+                                        type:'ant-design',
+                                        name: 'caretright',
+                                        color: 'white',
+                                        size: 15
+                                    }}
+                                ></Button>
+                              }
+                          </View>
+                          <View style={styles.table}>
+                            <View style={styles.table_header}>
+                                <Text style={{fontWeight: 700}}>Thời gian</Text>
+                                <Text style={{fontWeight: 700}}>Nhiệt độ</Text>
+                                <Text style={{fontWeight: 700}}>Độ ẩm</Text>
+                                <Text style={{fontWeight: 700}}>Lửa</Text>
+                                <Text style={{fontWeight: 700}}>Gas</Text>
 
+                            </View>
+                            {param.length>0 && param.map((e, index)=>(
+                                <View style={styles.table_item} key={index}>
+                                    <Text>{new Date(e.day).toLocaleDateString()}</Text>
+                                    <Text>{e.temp}°C</Text>
+                                    <Text>{e.humid}%</Text>
+                                    <Text>{e.fire}</Text>
+                                    <Text>{e.gas}</Text>
+                                </View>             
+                            ))}
+                          </View>
+
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ nhiệt độ</Text>
+                              <ChartStatistic
+                                  time={time} 
+                                  val={temp}
+                                  name='Nhiệt độ' 
+                                  color='#ffff00'   
+                              />
+                          </View>
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ độ ẩm</Text>
+                              <ChartStatistic
+                                  time={time} 
+                                  val={humid} 
+                                  name='Độ ẩm' 
+                                  color='#00ffff'
+                              />
+                          </View>
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ gas</Text>
+                              <ChartStatistic
+                                  time={time} 
+                                  val={gas} 
+                                  name='Gas'
+                                  color='#00ff00'
+                              />
+                          </View>
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ lửa</Text>
+                              <ChartStatistic
+                                  time={time} 
+                                  val={fire} 
+                                  name='Lửa'
+                                  color='#ff0000'
+                              />
+                          </View>
+                        </View> 
+                    </TabView.Item>
+
+                    <TabView.Item style={{ width: '100%', paddingLeft: '5%', paddingRight:'5%', marginLeft: '50%', paddingTop: 10}}>
+                        <View>
+                          <View style={{flexDirection:'row', justifyContent:'center', alignItems: 'center'}}>
+                            <Text style={{fontSize: 20, fontWeight: 700}}></Text>
+                            <Button
+                              onPress={showDatepicker}
+                              title={`Ngày:  ${date.toLocaleDateString()}`}
+                              buttonStyle={{ backgroundColor: '#fff', borderColor:'#000', borderWidth: 1, padding: 5}}
+                              titleStyle={{color: '#000', fontSize: 20}}
+                              iconRight
+                              icon={{
+                                name:'down',
+                                type: 'antdesign',
+                                color: '#000',
+                                size: 20
+                              }}/>
+                          </View>
+
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ nhiệt độ</Text>
+                              <ChartStatistic2
+                                  time={atime} 
+                                  val={atemp}
+                                  name='Nhiệt độ' 
+                                  color='#ffff00'   
+                              />
+                          </View>
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ độ ẩm</Text>
+                              <ChartStatistic2
+                                  time={atime} 
+                                  val={ahumid} 
+                                  name='Độ ẩm' 
+                                  color='#00ffff'
+                              />
+                          </View>
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ gas</Text>
+                              <ChartStatistic2
+                                  time={atime} 
+                                  val={agas} 
+                                  name='Gas'
+                                  color='#00ff00'
+                              />
+                          </View>
+                          <View style={styles.chart}>
+                              <Text style={{marginBottom:5, fontSize: 20, fontWeight: '700'}}>Biểu đồ lửa</Text>
+                              <ChartStatistic2
+                                  time={atime} 
+                                  val={afire} 
+                                  name='Lửa'
+                                  color='#ff0000'
+                              />
+                          </View>
+
+                        </View>
+                    </TabView.Item>
+                </TabView>
             </View>
         </ScrollView>
         <Footer navigation={navigation} page={'Statistic'}/>
@@ -282,7 +437,7 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
     borderWidth: 1,
     borderRadius: 5,
-    width: '90%'
+    width: '100%'
   },
   table_header: {
     backgroundColor: '#eee',

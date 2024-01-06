@@ -10,6 +10,7 @@ import Footer from '../../Components/Footer';
 import Header from '../../Components/Header';
 import { getRequest, postRequest } from '../../Services/api';
 import Toast from 'react-native-toast-message';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,14 @@ const ListLocation = ({navigation}) => {
     const [visibleJoin, setVisibleJoin] = useState(false);
     const [locationName, setLocationName] = useState('');
     const [locationID, setLocationID] = useState('');
+
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const [items, setItems] = useState([
+      {label: 'Tạo mới', value: '1'},
+      {label: 'Xin gia nhập', value: '2'},
+      {label: 'Đã yêu cầu', value: '3'}
+    ]);
 
     useEffect(() => {
         const checkAccessToken = async () => {
@@ -115,13 +124,40 @@ const ListLocation = ({navigation}) => {
     }
   }
 
+  useEffect(() => {
+    if (value ==='1') {
+      toggleCreate();
+    }
+    if (value === '2') {
+      toggleJoin()
+    }
+    if (value === '3') {
+      navigation.navigate('Request')
+    }
+  }, [value]);
+
   return (
     <View style={styles.container}>
       <Header navigation={navigation}/>
-        <ScrollView style={{paddingTop: 20}}>
+        <DropDownPicker
+          open={open}
+          // value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+          placeholder=''
+          // arrowIconStyle={{display:'none'}}
+          textStyle={{fontSize: 20}}
+          style={{width: '15%', marginLeft: '80%', marginVertical: 5, paddingLeft:0}}
+          ArrowDownIconComponent={()=><Entypo name="dots-three-vertical" size={24} color="black" style={{paddingRight:7.5}}/>}
+          ArrowUpIconComponent={()=><Entypo name="dots-three-vertical" size={24} color="black" style={{paddingRight:7.5}}/>}
+          dropDownContainerStyle={{width: '0%', marginLeft: '63%', marginTop:5}}
+        />
+        <ScrollView style={{paddingTop: 5}}>
             <View style={{width: '100%', alignItems: 'center', marginBottom: 50}}>
                 <Text style={{fontSize:40, fontWeight: 800, marginBottom: 10}}>Danh sách khu vực</Text>
-                <View style={styles.buttons}>
+                {/* <View style={styles.buttons}>
                     <Button
                         title={'Tạo mới'}
                         buttonStyle={{ backgroundColor: 'green' }}
@@ -137,7 +173,7 @@ const ListLocation = ({navigation}) => {
                         buttonStyle={{backgroundColor: 'orange'}}
                         onPress={()=>navigation.navigate('Request')}
                     ></Button>
-                </View>
+                </View> */}
 
                 {locations.length > 0 ?
                     <View style={{width: '100%', alignItems: 'center', marginTop: 10}} >
